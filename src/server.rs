@@ -7,7 +7,7 @@ use udp_connections::Listener;
 
 #[tokio::main]
 async fn main() -> Result<Infallible, Box<dyn Error>> {
-    let server = Listener::new(SocketAddr::V4(SocketAddrV4::new(
+    let server = Listener::bind(SocketAddr::V4(SocketAddrV4::new(
         Ipv4Addr::new(127, 0, 0, 1),
         55555,
     )))?;

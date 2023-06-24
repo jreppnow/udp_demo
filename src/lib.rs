@@ -11,7 +11,7 @@ pub struct Connection {
 }
 
 impl Listener {
-    pub fn new<A: Into<SockAddr>>(addr: A) -> Result<Self, io::Error> {
+    pub fn bind<A: Into<SockAddr>>(addr: A) -> Result<Self, io::Error> {
         let addr = addr.into();
         let socket = socket2::Socket::new(addr.domain(), Type::DGRAM, Some(Protocol::UDP))?;
 
