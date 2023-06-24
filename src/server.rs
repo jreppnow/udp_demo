@@ -19,7 +19,7 @@ async fn main() -> Result<Infallible, Box<dyn Error>> {
             loop {
                 let length = connection.recv(&mut buffer).await?;
                 println!(
-                    "Received {length} bytes from {:?}: {:x?}",
+                    "Received {length:02} bytes from {:?}: {:x?}",
                     connection.peer().unwrap(),
                     &buffer[..length]
                 );
