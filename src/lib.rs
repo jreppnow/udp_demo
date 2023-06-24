@@ -1,5 +1,6 @@
+use std::{io, mem::replace};
+
 use socket2::{Protocol, SockAddr, Type};
-use std::io;
 use tokio::net::UdpSocket;
 
 pub struct Listener {
@@ -23,25 +24,17 @@ impl Listener {
         })
     }
 
-    pub async fn listen(&self) -> Result<Connection, io::Error> {
-        let mut buffer = [0u8; 1024];
-        // ideally, you would want to use peek_from(..)/peek_sender(..)..
-        // but the kernel gives you the senders for the connected sockets as well if you do..
-        // kinda unfortunate, but acceptable if you can live with losing the first message
-        let (_, peer) = self.socket.recv_from(&mut buffer).await?;
+    pub async fn listen(&mut self) -> Result<Connection, io::Error> {
+        let peer = self.socket.peek_sender().await?;
         println!("New connection from {peer:?}!");
+        // Note: The reason this swap trick is done, is that the notification does not get cleared
+        // on the current socket after the peek - it will trigger again immediately.
+        // Therefore, we give out our own socket and replace ourselves with a fresh one.
+        let Listener { socket } = replace(self, Self::bind(self.socket.local_addr()?)?);
 
-        let addr: SockAddr = self.socket.local_addr()?.into();
+        socket.connect(peer).await?;
 
-        let socket = socket2::Socket::new(addr.domain(), Type::DGRAM, Some(Protocol::UDP))?;
-
-        socket.set_reuse_address(true)?;
-        socket.bind(&addr)?;
-        socket.connect(&peer.into())?;
-
-        Ok(Connection {
-            socket: UdpSocket::from_std(socket.into())?,
-        })
+        Ok(Connection { socket })
     }
 }
 

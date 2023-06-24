@@ -1,7 +1,10 @@
-use std::convert::Infallible;
-use std::error::Error;
-use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
-use std::time::Duration;
+use std::{
+    convert::Infallible,
+    error::Error,
+    net::{Ipv4Addr, SocketAddr, SocketAddrV4},
+    time::Duration,
+};
+
 use tokio::net::UdpSocket;
 
 #[tokio::main]
