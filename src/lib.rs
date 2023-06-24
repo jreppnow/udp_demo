@@ -25,7 +25,9 @@ impl Listener {
 
     pub async fn listen(&self) -> Result<Connection, io::Error> {
         let mut buffer = [0u8; 1024];
-        // ideally, you would want to use peek.. but alas, not supported atm
+        // ideally, you would want to use peek_from(..)/peek_sender(..)..
+        // but the kernel gives you the senders for the connected sockets as well if you do..
+        // kinda unfortunate, but acceptable if you can live with losing the first message
         let (_, peer) = self.socket.recv_from(&mut buffer).await?;
         println!("New connection from {peer:?}!");
 
