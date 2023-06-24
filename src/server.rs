@@ -16,11 +16,12 @@ async fn main() -> Result<Infallible, Box<dyn Error>> {
         #[allow(clippy::let_underscore_future)]
         let _: JoinHandle<io::Result<Infallible>> = tokio::task::spawn(async move {
             let mut buffer = [0u8; 1024];
+            let peer = connection.peer()?;
             loop {
                 let length = connection.recv(&mut buffer).await?;
                 println!(
                     "Received {length:02} bytes from {:?}: {:x?}",
-                    connection.peer().unwrap(),
+                    peer,
                     &buffer[..length]
                 );
             }
