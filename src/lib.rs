@@ -1,4 +1,4 @@
-use std::{io, mem::replace};
+use std::{io, mem::replace, net::SocketAddr};
 
 use socket2::{Protocol, SockAddr, Type};
 use tokio::net::UdpSocket;
@@ -41,5 +41,9 @@ impl Listener {
 impl Connection {
     pub async fn recv(&self, buffer: &mut [u8]) -> Result<usize, io::Error> {
         self.socket.recv(buffer).await
+    }
+
+    pub fn peer(&self) -> Result<SocketAddr, io::Error> {
+        self.socket.peer_addr()
     }
 }
